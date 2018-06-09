@@ -1,0 +1,32 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+		"model":"trashcube:compressedtrash",
+        "textures": {
+			"side": "trashcube:blocks/trashblock_normal",
+			"top": "trashcube:blocks/trashblock_normal"
+        },
+        "transform": "forge:default-block"
+    },
+	"variants": {
+		"inventory":[{}],
+		"color":{
+			"white":{},
+			"orange":{},
+			"magenta":{},
+			"light_blue":{},
+			"yellow":{},
+			"lime":{},
+			"pink":{},
+			"gray":{},
+			"silver":{},
+			"cyan":{},
+			"purple":{},
+			"blue":{},
+			"brown":{},
+			"green":{},
+			"red":{},
+			"black":{}
+		}
+	}
+}
