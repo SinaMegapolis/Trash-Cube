@@ -3,8 +3,13 @@ package net.sinamegapolis.trashcube.init;
 import net.minecraft.block.Block;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.storage.loot.LootEntryItem;
+import net.minecraft.world.storage.loot.LootPool;
+import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.RenderTooltipEvent;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -12,6 +17,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.sinamegapolis.trashcube.block.BlockCompressedTrash;
 import net.sinamegapolis.trashcube.block.BlockTrash;
 import net.sinamegapolis.trashcube.block.itemblock.ItemBlockCompressedTrash;
+import net.sinamegapolis.trashcube.loot.LootEntryItemStack;
 import net.sinamegapolis.trashcube.tileentity.TileEntityCompressedTrash;
 import net.sinamegapolis.trashcube.tileentity.TileEntityTrash;
 
@@ -52,4 +58,14 @@ public class ModRegistry {
         },BlockCompressedTrash.instanceItemBlockCompressedTrash);
     }
 
+    @SubscribeEvent
+    public void onLootRegister(LootTableLoadEvent event){
+        if(event.getName().equals(LootTableList.CHESTS_STRONGHOLD_CORRIDOR) || event.getName().equals(LootTableList.CHESTS_STRONGHOLD_CROSSING) || event.getName().equals(LootTableList.CHESTS_STRONGHOLD_LIBRARY)
+           || event.getName().equals(LootTableList.CHESTS_ABANDONED_MINESHAFT)){
+            LootPool lootpool = event.getTable().getPool("main");
+            if(lootpool != null){
+                lootpool.addEntry(new LootEntryItemStack("trashcube:trashblock",new ItemStack(BlockTrash.instance, 2),20,3));
+            }
+        }
+    }
 }

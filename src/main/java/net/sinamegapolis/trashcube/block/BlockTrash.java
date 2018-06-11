@@ -27,6 +27,7 @@ import java.util.ArrayList;
 
 public class BlockTrash extends Block implements IHasModel {
 
+    public static ItemBlockTrash instance;
 
     public BlockTrash(String name)
     {
@@ -36,7 +37,8 @@ public class BlockTrash extends Block implements IHasModel {
         setRegistryName(name);
         setUnlocalizedName(net.sinamegapolis.trashcube.TrashCube.MODID + "." + name);
         ModRegistry.BLOCKS.add(this);
-        ModRegistry.ITEMS.add(new ItemBlockTrash(this));
+        instance = new ItemBlockTrash(this);
+        ModRegistry.ITEMS.add(instance);
     }
 
     @Override
