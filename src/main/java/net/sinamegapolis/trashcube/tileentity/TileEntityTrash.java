@@ -1,8 +1,11 @@
 package net.sinamegapolis.trashcube.tileentity;
 
+import com.typesafe.config.ConfigException;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.IBlockColor;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
@@ -12,12 +15,15 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.sinamegapolis.trashcube.block.BlockTrash;
+import net.sinamegapolis.trashcube.block.itemblock.ItemBlockCompressedTrash;
 import net.sinamegapolis.trashcube.init.ModRegistry;
+import net.sinamegapolis.trashcube.structure.StructureList;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -25,18 +31,15 @@ import java.util.Random;
 
 public class TileEntityTrash extends TileEntity implements ITickable{
 
-    public ItemStackHandler trashInventory = new ItemStackHandler(1);
-    public static BlockPos lastCompressedTrashBlockPos;
+    public ItemStackHandler trashInventory = new ItemStackHandler(5);
+    public static ArrayList<BlockPos> cubeStructure1;
+    public int lastBlockIndex=0;
 
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         compound = super.writeToNBT(compound);
         compound.setTag("Inventory", trashInventory.serializeNBT());
-        if(lastCompressedTrashBlockPos!=null) {
-            compound.setInteger("x", lastCompressedTrashBlockPos.getX());
-            compound.setInteger("y", lastCompressedTrashBlockPos.getY());
-            compound.setInteger("z", lastCompressedTrashBlockPos.getZ());
-        }
+        compound.setInteger("lastBlockIndex", lastBlockIndex);
         return compound;
     }
 
@@ -44,21 +47,19 @@ public class TileEntityTrash extends TileEntity implements ITickable{
     {
         super.readFromNBT(compound);
         trashInventory.deserializeNBT(compound.getCompoundTag("Inventory"));
-        lastCompressedTrashBlockPos= new BlockPos(compound.getInteger("x"),compound.getInteger("y"),compound.getInteger("z"));
+        lastBlockIndex = compound.getInteger("lastBlockIndex");
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
-        if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-            return true;
-        return super.hasCapability(capability, facing);
+        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing == EnumFacing.UP || super.hasCapability(capability, facing);
     }
 
     @Nullable
     @Override
     public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
-        if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && facing == EnumFacing.UP)
             return (T)trashInventory;
         return super.getCapability(capability, facing);
     }
@@ -67,37 +68,48 @@ public class TileEntityTrash extends TileEntity implements ITickable{
     public void update() {
         int fullSlots = 0;
         ArrayList<Integer> slotsWithAnItem = new ArrayList<>();
-        BlockPos pos;
-        for(int n=0; n<1; n++){
+        cubeStructure1 = StructureList.getCubeStructure1(this.getPos());
+        boolean isPathBlocked = false;
+        for(int n=0; n<5; n++){
             if(trashInventory.getStackInSlot(n) != ItemStack.EMPTY) {
                 fullSlots = fullSlots + 1;
                 slotsWithAnItem.add(n);
             }
         }
-        if(fullSlots==1){
-            if(lastCompressedTrashBlockPos == null || lastCompressedTrashBlockPos == new BlockPos(0,0,0))
-                pos=this.getPos();
-            else
-                pos=lastCompressedTrashBlockPos;
-            int side = new Random().nextInt(6);
-            if(side==1 && this.getWorld().getBlockState(pos.east()) != Blocks.AIR)
-                lastCompressedTrashBlockPos = pos.east();
-            if(side==2 && this.getWorld().getBlockState(pos.south()) != Blocks.AIR)
-                lastCompressedTrashBlockPos = pos.south();
-            if(side==3 && this.getWorld().getBlockState(pos.west()) != Blocks.AIR)
-                lastCompressedTrashBlockPos = pos.west();
-            if(side==4 && this.getWorld().getBlockState(pos.north()) != Blocks.AIR)
-                lastCompressedTrashBlockPos = pos.north();
-            if(side==5 && this.getWorld().getBlockState(pos.up()) != Blocks.AIR)
-                lastCompressedTrashBlockPos = pos.up();
-            if(side==6 && this.getWorld().getBlockState(pos.down()) != Blocks.AIR)
-                lastCompressedTrashBlockPos = pos.down();
-            this.getWorld().setBlockState(lastCompressedTrashBlockPos, ModRegistry.CompressedTrashBlock.getDefaultState());
+        if(fullSlots==5){
+            ArrayList<Integer> IndexList = new ArrayList<>();
+            for (int i = 0; i < cubeStructure1.size(); i++) {
+                IBlockState state = this.getWorld().getBlockState(cubeStructure1.get(i));
+                if(state==Blocks.AIR.getDefaultState())
+                    IndexList.add(i);
+                if(state != Blocks.AIR.getDefaultState() && state != ModRegistry.CompressedTrashBlock.getDefaultState())
+                    isPathBlocked = true;
+            }
+            if(!isPathBlocked){
+            if(IndexList.size()==0){
+                if(this.getWorld().setBlockState(cubeStructure1.get(lastBlockIndex), ModRegistry.CompressedTrashBlock.getDefaultState()))
+                    lastBlockIndex = lastBlockIndex + 1;
+            }else {
+                this.getWorld().setBlockState(cubeStructure1.get(IndexList.get(0)), ModRegistry.CompressedTrashBlock.getDefaultState());
+                IndexList.remove(0);
+            }}else{
+                BlockPos pos = this.getPos().east();
+                //TODO: Send message to all players
+                EntityPlayer player = this.getWorld().getClosestPlayer(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ(), 25, false);
+                player.sendStatusMessage(new TextComponentTranslation("texts.pathblocked"), false);
+                for (int slot : slotsWithAnItem) {
+                    ItemStack itemStack = trashInventory.getStackInSlot(slot);
+                    if(itemStack!= ItemStack.EMPTY)
+                        this.getWorld().spawnEntity(new EntityItem(this.getWorld(),pos.getX(),pos.getY(),pos.getZ(),itemStack));
+                }
+            }
             for(int slot : slotsWithAnItem){
                 trashInventory.setStackInSlot(slot, ItemStack.EMPTY);
             }
         }
     }
+
+
 
 
 }

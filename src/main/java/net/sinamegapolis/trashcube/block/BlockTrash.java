@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.sinamegapolis.trashcube.block.itemblock.ItemBlockTrash;
 import net.sinamegapolis.trashcube.init.IHasModel;
 import net.sinamegapolis.trashcube.init.ModRegistry;
 import net.sinamegapolis.trashcube.tileentity.TileEntityTrash;
@@ -35,7 +36,7 @@ public class BlockTrash extends Block implements IHasModel {
         setRegistryName(name);
         setUnlocalizedName(net.sinamegapolis.trashcube.TrashCube.MODID + "." + name);
         ModRegistry.BLOCKS.add(this);
-        ModRegistry.ITEMS.add(new ItemBlock(this).setRegistryName(getRegistryName()));
+        ModRegistry.ITEMS.add(new ItemBlockTrash(this));
     }
 
     @Override

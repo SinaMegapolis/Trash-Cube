@@ -4,7 +4,9 @@ import net.minecraft.block.Block;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.sinamegapolis.trashcube.block.BlockCompressedTrash;
@@ -20,7 +22,7 @@ public class ModRegistry {
     public static final List<net.minecraft.block.Block> BLOCKS = new ArrayList<net.minecraft.block.Block>();
     public static final List<Item> ITEMS = new ArrayList<Item>();
     public static final Block TrashBlock = new BlockTrash("trashblock");
-    public static final Block CompressedTrashBlock = new BlockCompressedTrash("compressedtrash",true);
+    public static final Block CompressedTrashBlock = new BlockCompressedTrash("compressedtrash");
 
     @SubscribeEvent
     public void onBlockRegister(RegistryEvent.Register<Block> event) {
@@ -49,4 +51,5 @@ public class ModRegistry {
             return 0xFFFFFF;
         },BlockCompressedTrash.instanceItemBlockCompressedTrash);
     }
+
 }

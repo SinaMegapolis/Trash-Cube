@@ -38,7 +38,7 @@ public class BlockCompressedTrash extends Block implements IHasModel {
     public static final PropertyEnum<EnumDyeColor> COLOR = PropertyEnum.create("color", EnumDyeColor.class);
     public static String[] colorNames ={"white","orange","magenta","light_blue","yellow","lime","pink","gray","silver","cyan","purple","blue","brown","green","red","black"};
 
-    public BlockCompressedTrash(String name,boolean hasCustomItemBlock)
+    public BlockCompressedTrash(String name)
     {
         super(Material.WOOD);
         setCreativeTab(CreativeTabs.DECORATIONS);
@@ -47,16 +47,8 @@ public class BlockCompressedTrash extends Block implements IHasModel {
         setDefaultState(this.blockState.getBaseState().withProperty(COLOR, EnumDyeColor.WHITE));
         setUnlocalizedName(net.sinamegapolis.trashcube.TrashCube.MODID + "." + name);
         ModRegistry.BLOCKS.add(this);
-        if(!hasCustomItemBlock)
-            ModRegistry.ITEMS.add(new ItemBlock(this).setRegistryName(getRegistryName()));
-        else {
-            instanceItemBlockCompressedTrash = new ItemBlockCompressedTrash(this);
-            ModRegistry.ITEMS.add(instanceItemBlockCompressedTrash);
-        }
-    }
-
-    public BlockCompressedTrash(String name){
-        this(name,false);
+        instanceItemBlockCompressedTrash = new ItemBlockCompressedTrash(this);
+        ModRegistry.ITEMS.add(instanceItemBlockCompressedTrash);
     }
 
     @Override
