@@ -1,4 +1,4 @@
-TrashCube
+**TrashCube**
 
 TrashCube is a Minecraft Mod that adds another way to deal with trash: convert them into blocks!
 it's easy. just find a trashcube in strongholds or dungeons and insert your trash from top using hoppers or droppers.
