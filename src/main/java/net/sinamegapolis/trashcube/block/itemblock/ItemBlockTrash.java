@@ -22,7 +22,8 @@ public class ItemBlockTrash extends ItemBlock {
     @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-        tooltip.add("Converts Your Trash into Compressed Trash Block Every time its inventory gets full");
+        tooltip.add("Converts your trash into Compressed Trash block every time its inventory gets full");
         tooltip.add("Has 5 slots");
+        tooltip.add("Use a Hopper to insert items from top");
     }
 }

@@ -1,6 +1,7 @@
 package net.sinamegapolis.trashcube.init;
 
 import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,6 +15,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.sinamegapolis.trashcube.TrashCube;
 import net.sinamegapolis.trashcube.block.BlockCompressedTrash;
 import net.sinamegapolis.trashcube.block.BlockTrash;
 import net.sinamegapolis.trashcube.block.itemblock.ItemBlockCompressedTrash;
@@ -27,6 +29,14 @@ import java.util.List;
 public class ModRegistry {
     public static final List<net.minecraft.block.Block> BLOCKS = new ArrayList<net.minecraft.block.Block>();
     public static final List<Item> ITEMS = new ArrayList<Item>();
+    public static final CreativeTabs TAB = new CreativeTabs(TrashCube.MODID) {
+
+        @Override
+        public ItemStack getTabIconItem() {
+            return new ItemStack(BlockCompressedTrash.instanceItemBlockCompressedTrash,1,15);
+        }
+
+    };
     public static final Block TrashBlock = new BlockTrash("trashblock");
     public static final Block CompressedTrashBlock = new BlockCompressedTrash("compressedtrash");
 

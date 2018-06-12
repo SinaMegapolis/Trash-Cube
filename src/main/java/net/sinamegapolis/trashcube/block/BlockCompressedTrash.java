@@ -41,7 +41,7 @@ public class BlockCompressedTrash extends Block implements IHasModel {
     public BlockCompressedTrash(String name)
     {
         super(Material.WOOD);
-        setCreativeTab(CreativeTabs.DECORATIONS);
+        setCreativeTab(ModRegistry.TAB);
         setHardness(0.8f);
         setRegistryName(name);
         setDefaultState(this.blockState.getBaseState().withProperty(COLOR, EnumDyeColor.WHITE));

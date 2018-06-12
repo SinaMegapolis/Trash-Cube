@@ -1,14 +1,14 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
+  "modid": "trashcube",
+  "name": "TrashCube",
+  "description": "Adds another way to make your trash useful!",
   "version": "${version}",
-  "mcversion": "${mcversion}",
+  "mcversion": "1.0",
   "url": "",
   "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
+  "authorList": ["SinaMegapolis"],
+  "credits": "",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

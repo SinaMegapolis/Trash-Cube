@@ -1,4 +1,4 @@
-tile.trashcube.trashblock.name=Trash Structure Maker
+tile.trashcube.trashblock.name=Trash Cube
 tile.trashcube.compressedtrash.0.name=Compressed Trash Block (Black)
 tile.trashcube.compressedtrash.1.name=Compressed Trash Block (Red)
 tile.trashcube.compressedtrash.2.name=Compressed Trash Block (Green)
@@ -17,3 +17,5 @@ tile.trashcube.compressedtrash.14.name=Compressed Trash Block (Orange)
 tile.trashcube.compressedtrash.15.name=Compressed Trash Block (White)
 
 texts.pathblocked=The Structure, Path is blocked. Please ensure that TrashCube is in the center of the botton layer of a 5x5 empty cube, then insert your trash again.
+
+itemGroup.trashcube=Trash Cube

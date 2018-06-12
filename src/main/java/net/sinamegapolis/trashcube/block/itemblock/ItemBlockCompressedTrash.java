@@ -6,6 +6,8 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.sinamegapolis.trashcube.block.BlockCompressedTrash;
 
+import java.util.Objects;
+
 public class ItemBlockCompressedTrash extends ItemBlock {
     public ItemBlockCompressedTrash(BlockCompressedTrash block) {
         super(block);

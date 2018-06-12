@@ -32,7 +32,7 @@ public class BlockTrash extends Block implements IHasModel {
     public BlockTrash(String name)
     {
         super(Material.WOOD);
-        setCreativeTab(CreativeTabs.DECORATIONS);
+        setCreativeTab(ModRegistry.TAB);
         setHardness(0.8f);
         setRegistryName(name);
         setUnlocalizedName(net.sinamegapolis.trashcube.TrashCube.MODID + "." + name);
