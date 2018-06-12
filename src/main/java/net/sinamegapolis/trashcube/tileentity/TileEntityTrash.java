@@ -10,6 +10,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -24,16 +25,16 @@ public class TileEntityTrash extends TileEntity implements ITickable{
 
     private ItemStackHandler trashInventory = new ItemStackHandler(3);
     private static ArrayList<BlockPos> cubeStructure;
-    private int lastBlockIndex=0;
     private boolean isStructureSet = false;
+    private boolean saidTheStructureCompletedMessage = false;
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         compound = super.writeToNBT(compound);
         compound.setTag("Inventory", trashInventory.serializeNBT());
-        compound.setInteger("lastBlockIndex", lastBlockIndex);
         compound.setBoolean("isStructureSet", isStructureSet);
+        compound.setBoolean("sTSCM", saidTheStructureCompletedMessage);
         return compound;
     }
 
@@ -42,8 +43,8 @@ public class TileEntityTrash extends TileEntity implements ITickable{
     {
         super.readFromNBT(compound);
         trashInventory.deserializeNBT(compound.getCompoundTag("Inventory"));
-        lastBlockIndex = compound.getInteger("lastBlockIndex");
         isStructureSet = compound.getBoolean("isStructureSet");
+        saidTheStructureCompletedMessage = compound.getBoolean("sTSCM");
     }
 
     @SuppressWarnings("unchecked")
@@ -90,8 +91,14 @@ public class TileEntityTrash extends TileEntity implements ITickable{
                 }
                 if (!isPathBlocked) {
                     if (indexList.isEmpty()) {
-                        if (this.getWorld().setBlockState(cubeStructure.get(lastBlockIndex), ModRegistry.CompressedTrashBlock.getDefaultState()))
-                            lastBlockIndex = lastBlockIndex + 1;
+                            //TODO: Send message to all nearby players
+                            EntityPlayer player = this.getWorld().getClosestPlayer(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ(), 25, false);
+                            try {
+                                player.sendStatusMessage(new TextComponentString(new TextComponentTranslation("texts.structureComplete.line1").getUnformattedComponentText() + " [x:" + this.getPos().getX() + ",y:" + this.getPos().getY() + ",z:" + this.getPos().getZ() + "] " + new TextComponentTranslation("texts.structureComplete.line2").getUnformattedComponentText()), false);
+                                saidTheStructureCompletedMessage = true;
+                            }catch(NullPointerException e) {
+                                saidTheStructureCompletedMessage = false;
+                            }
                     } else {
                         this.getWorld().setBlockState(cubeStructure.get(indexList.get(0)), ModRegistry.CompressedTrashBlock.getDefaultState());
                         indexList.remove(0);

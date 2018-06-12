@@ -574,6 +574,10 @@ public class StructureList {
         pos = pos.east();
         Structure.add(pos);
 
+        pos = pos.up();
+        Structure.add(pos);
+        pos = pos.up();
+        Structure.add(pos);
         return Structure;
     }
 }

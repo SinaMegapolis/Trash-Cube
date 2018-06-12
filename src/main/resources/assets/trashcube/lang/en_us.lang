@@ -17,5 +17,7 @@ tile.trashcube.compressedtrash.14.name=Compressed Trash Block (Orange)
 tile.trashcube.compressedtrash.15.name=Compressed Trash Block (White)
 
 texts.pathblocked=The Structure Path is blocked. Please ensure that TrashCube is in the center of the bottom layer of a 5x5 empty cube, then insert your trash again.
+texts.structureComplete.line1=This Trash Cube's
+texts.structureComplete.line2=Structure is Completed. Now it will only void the trash until you pickup some of the Compressed Trash Blocks.
 
 itemGroup.trashcube=Trash Cube
