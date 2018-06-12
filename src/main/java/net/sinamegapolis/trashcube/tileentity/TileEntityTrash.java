@@ -74,6 +74,8 @@ public class TileEntityTrash extends TileEntity implements ITickable{
         if(fullSlots==1){
             ArrayList<Integer> indexList = new ArrayList<>();
             //Chooses the structure this Trash Cube will Build
+            if(cubeStructure==null)
+                isStructureSet = false;
             if(!isStructureSet){
                 cubeStructure = StructureList.getRandomCubeStructure(this.getPos());
                 isStructureSet = true;
@@ -83,7 +85,7 @@ public class TileEntityTrash extends TileEntity implements ITickable{
                     IBlockState state = this.getWorld().getBlockState(cubeStructure.get(i));
                     if (state == Blocks.AIR.getDefaultState() || state.getBlock().isReplaceable(this.getWorld(), cubeStructure.get(i)))
                         indexList.add(i);
-                    if (state != Blocks.AIR.getDefaultState() && state != ModRegistry.CompressedTrashBlock.getDefaultState() && state.getBlock().isReplaceable(this.getWorld(), cubeStructure.get(i)))
+                    if (state != Blocks.AIR.getDefaultState() && state != ModRegistry.CompressedTrashBlock.getDefaultState() && !state.getBlock().isReplaceable(this.getWorld(),cubeStructure.get(i) ))
                         isPathBlocked = true;
                 }
                 if (!isPathBlocked) {
