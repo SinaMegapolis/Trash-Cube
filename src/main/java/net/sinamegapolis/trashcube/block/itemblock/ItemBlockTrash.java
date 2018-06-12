@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemBlockTrash extends ItemBlock {
-    public ItemBlockTrash(BlockTrash block) {
+    public ItemBlockTrash(Block block) {
         super(block);
         setRegistryName(block.getRegistryName());
     }

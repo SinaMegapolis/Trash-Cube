@@ -27,7 +27,7 @@ import java.util.ArrayList;
 
 public class BlockTrash extends Block implements IHasModel {
 
-    public static ItemBlockTrash instance;
+    private ItemBlockTrash instance;
 
     public BlockTrash(String name)
     {
@@ -41,11 +41,14 @@ public class BlockTrash extends Block implements IHasModel {
         ModRegistry.ITEMS.add(instance);
     }
 
+    public ItemBlockTrash getInstance() {
+        return instance;
+    }
+
     @Override
     public void registerModels() {
         ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this),
                 0, new ModelResourceLocation(getRegistryName(), "inventory"));
-
     }
 
 
@@ -58,6 +61,7 @@ public class BlockTrash extends Block implements IHasModel {
     /**
      * Called when the block is right clicked by a player.
      */
+    @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
         return false;
@@ -69,14 +73,10 @@ public class BlockTrash extends Block implements IHasModel {
         return true;
     }
 
-    @Override
-    public void onBlockDestroyedByPlayer(World worldIn, BlockPos pos, IBlockState state) {
-        super.onBlockDestroyedByPlayer(worldIn, pos, state);
-    }
-
     /**
      * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
      */
+    @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
         TileEntity trashEntity = worldIn.getTileEntity(pos);

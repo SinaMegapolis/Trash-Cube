@@ -19,6 +19,7 @@ import net.sinamegapolis.trashcube.TrashCube;
 import net.sinamegapolis.trashcube.block.BlockCompressedTrash;
 import net.sinamegapolis.trashcube.block.BlockTrash;
 import net.sinamegapolis.trashcube.block.itemblock.ItemBlockCompressedTrash;
+import net.sinamegapolis.trashcube.block.itemblock.ItemBlockTrash;
 import net.sinamegapolis.trashcube.loot.LootEntryItemStack;
 import net.sinamegapolis.trashcube.tileentity.TileEntityCompressedTrash;
 import net.sinamegapolis.trashcube.tileentity.TileEntityTrash;
@@ -28,7 +29,7 @@ import java.util.List;
 
 public class ModRegistry {
     public static final List<net.minecraft.block.Block> BLOCKS = new ArrayList<net.minecraft.block.Block>();
-    public static final List<Item> ITEMS = new ArrayList<Item>();
+    public static final List<Item> ITEMS = new ArrayList<>();
     public static final CreativeTabs TAB = new CreativeTabs(TrashCube.MODID) {
 
         @Override
@@ -55,15 +56,14 @@ public class ModRegistry {
 
     @SubscribeEvent
     public void onBlockColorHandlerRegister(ColorHandlerEvent.Block event){
-        event.getBlockColors().registerBlockColorHandler(((sstate, worldInn, Bpos, tintIndex) -> sstate.getValue(BlockCompressedTrash.COLOR).getColorValue()),CompressedTrashBlock);
+        event.getBlockColors().registerBlockColorHandler(((sstate, worldInn, bPos, tintIndex) -> sstate.getValue(BlockCompressedTrash.COLOR).getColorValue()),CompressedTrashBlock);
     }
 
     @SubscribeEvent
     public void onItemColorHandlerRegister(ColorHandlerEvent.Item event){
         event.getItemColors().registerItemColorHandler((stack,tintIndex)->{
-            if(stack.getItem()instanceof ItemBlockCompressedTrash){
+            if(stack.getItem()instanceof ItemBlockCompressedTrash)
                 return EnumDyeColor.byDyeDamage(stack.getItemDamage()).getColorValue();
-            }
             return 0xFFFFFF;
         },BlockCompressedTrash.instanceItemBlockCompressedTrash);
     }
@@ -74,7 +74,7 @@ public class ModRegistry {
            || event.getName().equals(LootTableList.CHESTS_ABANDONED_MINESHAFT)){
             LootPool lootpool = event.getTable().getPool("main");
             if(lootpool != null){
-                lootpool.addEntry(new LootEntryItemStack("trashcube:trashblock",new ItemStack(BlockTrash.instance, 2),20,3));
+                lootpool.addEntry(new LootEntryItemStack("trashcube:trashblock",new ItemStack(new ItemBlockTrash(TrashBlock), 2),15,3));
             }
         }
     }

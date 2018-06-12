@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 public class TileEntityTrash extends TileEntity implements ITickable{
 
-    private ItemStackHandler trashInventory = new ItemStackHandler(1);
+    private ItemStackHandler trashInventory = new ItemStackHandler(3);
     private static ArrayList<BlockPos> cubeStructure;
     private int lastBlockIndex=0;
     private boolean isStructureSet = false;
@@ -65,13 +65,13 @@ public class TileEntityTrash extends TileEntity implements ITickable{
         int fullSlots = 0;
         ArrayList<Integer> slotsWithAnItem = new ArrayList<>();
         boolean isPathBlocked = false;
-        for(int n=0; n<1; n++){
+        for(int n=0; n<3; n++){
             if(trashInventory.getStackInSlot(n) != ItemStack.EMPTY) {
                 fullSlots = fullSlots + 1;
                 slotsWithAnItem.add(n);
             }
         }
-        if(fullSlots==1){
+        if(fullSlots==3){
             ArrayList<Integer> indexList = new ArrayList<>();
             //Chooses the structure this Trash Cube will Build
             if(cubeStructure==null)
@@ -98,7 +98,7 @@ public class TileEntityTrash extends TileEntity implements ITickable{
                     }
                 } else {
                     BlockPos pos = this.getPos().east();
-                    //TODO: Send message to all  nearby players
+                    //TODO: Send message to all nearby players
                     EntityPlayer player = this.getWorld().getClosestPlayer(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ(), 25, false);
                     if (player != null) {
                         player.sendStatusMessage(new TextComponentTranslation("texts.pathblocked"), false);

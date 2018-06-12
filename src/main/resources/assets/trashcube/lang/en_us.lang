@@ -16,6 +16,6 @@ tile.trashcube.compressedtrash.13.name=Compressed Trash Block (Magenta)
 tile.trashcube.compressedtrash.14.name=Compressed Trash Block (Orange)
 tile.trashcube.compressedtrash.15.name=Compressed Trash Block (White)
 
-texts.pathblocked=The Structure, Path is blocked. Please ensure that TrashCube is in the center of the botton layer of a 5x5 empty cube, then insert your trash again.
+texts.pathblocked=The Structure Path is blocked. Please ensure that TrashCube is in the center of the bottom layer of a 5x5 empty cube, then insert your trash again.
 
 itemGroup.trashcube=Trash Cube
