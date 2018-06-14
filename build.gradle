@@ -32,6 +32,12 @@ minecraft {
     mappings = "snapshot_20171003"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
+repositories {
+    maven {
+        name 'DVS1 Maven FS'
+        url 'http://dvs1.progwml6.com/files/maven'
+    }
+}
 
 dependencies {
     // you may put jars on which you depend on in ./libs
@@ -54,7 +60,8 @@ dependencies {
     // for more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
+    deobfCompile "slimeknights.mantle:Mantle:1.12-1.3.2.24"
+    deobfCompile "slimeknights:TConstruct:1.12.2-2.9.0.59"
 }
 
 processResources {

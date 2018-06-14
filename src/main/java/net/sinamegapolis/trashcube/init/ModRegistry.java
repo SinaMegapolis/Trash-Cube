@@ -20,6 +20,7 @@ import net.sinamegapolis.trashcube.block.BlockCompressedTrash;
 import net.sinamegapolis.trashcube.block.BlockTrash;
 import net.sinamegapolis.trashcube.block.itemblock.ItemBlockCompressedTrash;
 import net.sinamegapolis.trashcube.block.itemblock.ItemBlockTrash;
+import net.sinamegapolis.trashcube.item.ItemNotificationModule;
 import net.sinamegapolis.trashcube.loot.LootEntryItemStack;
 import net.sinamegapolis.trashcube.tileentity.TileEntityCompressedTrash;
 import net.sinamegapolis.trashcube.tileentity.TileEntityTrash;
@@ -40,6 +41,7 @@ public class ModRegistry {
     };
     public static final Block TrashBlock = new BlockTrash("trashblock");
     public static final Block CompressedTrashBlock = new BlockCompressedTrash("compressedtrash");
+    public static final Item NotificationModule = new ItemNotificationModule("nmodule");
 
     @SubscribeEvent
     public void onBlockRegister(RegistryEvent.Register<Block> event) {

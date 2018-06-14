@@ -2,6 +2,9 @@ package net.sinamegapolis.trashcube.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyInteger;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
@@ -14,13 +17,16 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.sinamegapolis.trashcube.TrashCube;
 import net.sinamegapolis.trashcube.block.itemblock.ItemBlockTrash;
 import net.sinamegapolis.trashcube.init.IHasModel;
 import net.sinamegapolis.trashcube.init.ModRegistry;
+import net.sinamegapolis.trashcube.item.ItemNotificationModule;
 import net.sinamegapolis.trashcube.tileentity.TileEntityTrash;
 
 import java.util.ArrayList;
@@ -28,6 +34,8 @@ import java.util.ArrayList;
 public class BlockTrash extends Block implements IHasModel {
 
     private ItemBlockTrash instance;
+    private static final PropertyInteger NumberOfSlots = PropertyInteger.create("numberofslots",0,1);
+    private static String moduleName;
 
     public BlockTrash(String name)
     {
@@ -35,7 +43,8 @@ public class BlockTrash extends Block implements IHasModel {
         setCreativeTab(ModRegistry.TAB);
         setHardness(0.8f);
         setRegistryName(name);
-        setUnlocalizedName(net.sinamegapolis.trashcube.TrashCube.MODID + "." + name);
+        setUnlocalizedName(TrashCube.MODID + "." + name);
+        setDefaultState(this.blockState.getBaseState().withProperty(NumberOfSlots, 0));
         ModRegistry.BLOCKS.add(this);
         instance = new ItemBlockTrash(this);
         ModRegistry.ITEMS.add(instance);
@@ -47,10 +56,9 @@ public class BlockTrash extends Block implements IHasModel {
 
     @Override
     public void registerModels() {
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this),
-                0, new ModelResourceLocation(getRegistryName(), "inventory"));
+        for (int i = 0; i < 2; i++)
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), i, new ModelResourceLocation(getRegistryName(), "numberofslots="+i));
     }
-
 
     /**
      * Returns a new instance of a block's tile entity class. Called on placing the block.
@@ -64,8 +72,27 @@ public class BlockTrash extends Block implements IHasModel {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        return false;
+        float i = 1f/16;
+        if(3*i<=hitY && hitY<=9*i && 5*i<=hitZ && hitZ<=11*i){
+            if (worldIn.isRemote)
+                return true;
+
+            if (playerIn.getHeldItem(hand).getItem() == ModRegistry.NotificationModule) {
+                worldIn.setBlockState(pos, this.blockState.getBaseState().withProperty(NumberOfSlots, 1));
+                moduleName=playerIn.getHeldItem(hand).getDisplayName();
+                return true;
+            }
+            if(playerIn.isSneaking()) {
+                playerIn.sendStatusMessage(new TextComponentString("hitX: " + hitX + ",hitY: " + hitY + "hitZ: " + hitZ), false);
+                return true;
+            }
+
+                worldIn.setBlockState(pos, getDefaultState());
+                playerIn.addItemStackToInventory(new ItemStack(ModRegistry.NotificationModule,1).setStackDisplayName(moduleName));
+                return true;}
+                return false;
     }
+
 
     @Override
     public boolean hasTileEntity(IBlockState state)
@@ -95,5 +122,19 @@ public class BlockTrash extends Block implements IHasModel {
         super.breakBlock(worldIn, pos, state);
     }
 
+    @Override
+    public int getMetaFromState(IBlockState state) {
+        return state.getValue(NumberOfSlots);
+    }
+
+    @Override
+    public IBlockState getStateFromMeta(int meta) {
+        return this.getDefaultState().withProperty(NumberOfSlots, meta);
+    }
+
+    @Override
+    public BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, NumberOfSlots);
+    }
 
 }

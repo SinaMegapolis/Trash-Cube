@@ -3,8 +3,7 @@
     "defaults": {
 		"model":"trashcube:compressedtrash",
         "textures": {
-			"side": "trashcube:blocks/trashblock_normal",
-			"top": "trashcube:blocks/trashblock_normal"
+			"all": "trashcube:blocks/trashblock_normal"
         },
         "transform": "forge:default-block"
     },
