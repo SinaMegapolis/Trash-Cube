@@ -18,6 +18,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -35,7 +36,6 @@ public class BlockTrash extends Block implements IHasModel {
 
     private ItemBlockTrash instance;
     private static final PropertyInteger NumberOfSlots = PropertyInteger.create("numberofslots",0,1);
-    private static String moduleName;
 
     public BlockTrash(String name)
     {
@@ -73,23 +73,32 @@ public class BlockTrash extends Block implements IHasModel {
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
         float i = 1f/16;
+        TileEntityTrash te = (TileEntityTrash)worldIn.getTileEntity(pos);
         if(3*i<=hitY && hitY<=9*i && 5*i<=hitZ && hitZ<=11*i){
             if (worldIn.isRemote)
                 return true;
 
             if (playerIn.getHeldItem(hand).getItem() == ModRegistry.NotificationModule) {
                 worldIn.setBlockState(pos, this.blockState.getBaseState().withProperty(NumberOfSlots, 1));
-                moduleName=playerIn.getHeldItem(hand).getDisplayName();
+                te = (TileEntityTrash)worldIn.getTileEntity(pos);
+                te.setModuleName(playerIn.getHeldItem(hand).getDisplayName());
+                te.setnModuleAttached(true);
+                if(!playerIn.capabilities.isCreativeMode) {
+                    ItemStack stack = playerIn.getHeldItem(hand);
+                    stack.shrink(1);
+                    playerIn.setHeldItem(hand, stack);
+                }
                 return true;
             }
-            if(playerIn.isSneaking()) {
-                playerIn.sendStatusMessage(new TextComponentString("hitX: " + hitX + ",hitY: " + hitY + "hitZ: " + hitZ), false);
-                return true;
-            }
-
+            if(te.isnModuleAttached()){
                 worldIn.setBlockState(pos, getDefaultState());
-                playerIn.addItemStackToInventory(new ItemStack(ModRegistry.NotificationModule,1).setStackDisplayName(moduleName));
-                return true;}
+                te = (TileEntityTrash)worldIn.getTileEntity(pos);
+                if(!te.getModuleName().equals(new TextComponentTranslation("item.trashcube.nmodule.name").getUnformattedComponentText()))
+                    playerIn.addItemStackToInventory(new ItemStack(ModRegistry.NotificationModule,1).setStackDisplayName(te.getModuleName()));
+                if(te.getModuleName().equals(new TextComponentTranslation("item.trashcube.nmodule.name").getUnformattedComponentText()))
+                    playerIn.addItemStackToInventory(new ItemStack(ModRegistry.NotificationModule,1));
+                te.setnModuleAttached(false);
+                return true;}}
                 return false;
     }
 
