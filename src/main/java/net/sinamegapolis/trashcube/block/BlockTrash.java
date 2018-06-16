@@ -6,6 +6,7 @@ import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
@@ -35,7 +36,6 @@ import java.util.ArrayList;
 public class BlockTrash extends Block implements IHasModel {
 
     private ItemBlockTrash instance;
-    private static final PropertyInteger NumberOfSlots = PropertyInteger.create("numberofslots",0,1);
 
     public BlockTrash(String name)
     {
@@ -44,7 +44,6 @@ public class BlockTrash extends Block implements IHasModel {
         setHardness(0.8f);
         setRegistryName(name);
         setUnlocalizedName(TrashCube.MODID + "." + name);
-        setDefaultState(this.blockState.getBaseState().withProperty(NumberOfSlots, 0));
         ModRegistry.BLOCKS.add(this);
         instance = new ItemBlockTrash(this);
         ModRegistry.ITEMS.add(instance);
@@ -56,8 +55,7 @@ public class BlockTrash extends Block implements IHasModel {
 
     @Override
     public void registerModels() {
-        for (int i = 0; i < 2; i++)
-            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), i, new ModelResourceLocation(getRegistryName(), "numberofslots="+i));
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
     }
 
     /**
@@ -78,11 +76,10 @@ public class BlockTrash extends Block implements IHasModel {
             if (worldIn.isRemote)
                 return true;
 
-            if (playerIn.getHeldItem(hand).getItem() == ModRegistry.NotificationModule) {
-                worldIn.setBlockState(pos, this.blockState.getBaseState().withProperty(NumberOfSlots, 1));
-                te = (TileEntityTrash)worldIn.getTileEntity(pos);
+            if (playerIn.getHeldItem(hand).getItem() == ModRegistry.NotificationModule && !te.isnModuleAttached()) {
                 te.setModuleName(playerIn.getHeldItem(hand).getDisplayName());
                 te.setnModuleAttached(true);
+                worldIn.notifyBlockUpdate(te.getPos(), state, state, 2);
                 if(!playerIn.capabilities.isCreativeMode) {
                     ItemStack stack = playerIn.getHeldItem(hand);
                     stack.shrink(1);
@@ -91,13 +88,13 @@ public class BlockTrash extends Block implements IHasModel {
                 return true;
             }
             if(te.isnModuleAttached()){
-                worldIn.setBlockState(pos, getDefaultState());
                 te = (TileEntityTrash)worldIn.getTileEntity(pos);
                 if(!te.getModuleName().equals(new TextComponentTranslation("item.trashcube.nmodule.name").getUnformattedComponentText()))
                     playerIn.addItemStackToInventory(new ItemStack(ModRegistry.NotificationModule,1).setStackDisplayName(te.getModuleName()));
                 if(te.getModuleName().equals(new TextComponentTranslation("item.trashcube.nmodule.name").getUnformattedComponentText()))
                     playerIn.addItemStackToInventory(new ItemStack(ModRegistry.NotificationModule,1));
                 te.setnModuleAttached(false);
+                worldIn.notifyBlockUpdate(te.getPos(), state, state, 2);
                 return true;}}
                 return false;
     }
@@ -131,19 +128,5 @@ public class BlockTrash extends Block implements IHasModel {
         super.breakBlock(worldIn, pos, state);
     }
 
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        return state.getValue(NumberOfSlots);
-    }
-
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return this.getDefaultState().withProperty(NumberOfSlots, meta);
-    }
-
-    @Override
-    public BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, NumberOfSlots);
-    }
 
 }

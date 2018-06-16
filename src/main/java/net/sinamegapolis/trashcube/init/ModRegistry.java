@@ -1,18 +1,22 @@
 package net.sinamegapolis.trashcube.init;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.LootEntryItem;
 import net.minecraft.world.storage.loot.LootPool;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.RenderTooltipEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.sinamegapolis.trashcube.TrashCube;
@@ -24,6 +28,7 @@ import net.sinamegapolis.trashcube.item.ItemNotificationModule;
 import net.sinamegapolis.trashcube.loot.LootEntryItemStack;
 import net.sinamegapolis.trashcube.tileentity.TileEntityCompressedTrash;
 import net.sinamegapolis.trashcube.tileentity.TileEntityTrash;
+import net.sinamegapolis.trashcube.tileentity.renderer.TESRTrash;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +53,7 @@ public class ModRegistry {
         event.getRegistry().registerAll(BLOCKS.toArray(new Block[0]));
         GameRegistry.registerTileEntity(TileEntityTrash.class, TrashBlock.getRegistryName());
         GameRegistry.registerTileEntity(TileEntityCompressedTrash.class, CompressedTrashBlock.getRegistryName());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityTrash.class, new TESRTrash());
     }
 
 
@@ -80,4 +86,5 @@ public class ModRegistry {
             }
         }
     }
+
 }

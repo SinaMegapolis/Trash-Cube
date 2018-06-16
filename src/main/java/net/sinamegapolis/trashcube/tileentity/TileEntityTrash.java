@@ -6,6 +6,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -33,6 +35,8 @@ public class TileEntityTrash extends TileEntity implements ITickable{
     private boolean saidTheStructureCompletedMessage=false;
     private String moduleName;
     private boolean nModuleAttached;
+    private boolean bModuleAttached;
+    private boolean wModuleAttached;
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
@@ -43,7 +47,9 @@ public class TileEntityTrash extends TileEntity implements ITickable{
         compound.setBoolean("sTSCM", saidTheStructureCompletedMessage);
         if(moduleName!=null)
             compound.setString("moduleName", moduleName);
-        compound.setBoolean("doesHaveModule", nModuleAttached);
+        compound.setBoolean("nModuleAttached", nModuleAttached);
+        compound.setBoolean("bModuleAttached", bModuleAttached);
+        compound.setBoolean("wModuleAttached", wModuleAttached);
         return compound;
     }
 
@@ -55,7 +61,9 @@ public class TileEntityTrash extends TileEntity implements ITickable{
         isStructureSet = compound.getBoolean("isStructureSet");
         saidTheStructureCompletedMessage = compound.getBoolean("sTSCM");
         moduleName = compound.getString("moduleName");
-        nModuleAttached = compound.getBoolean("doesHaveModule");
+        nModuleAttached = compound.getBoolean("nModuleAttached");
+        bModuleAttached = compound.getBoolean("bModuleAttached");
+        wModuleAttached = compound.getBoolean("wModuleAttached");
     }
 
     @SuppressWarnings("unchecked")
@@ -124,7 +132,7 @@ public class TileEntityTrash extends TileEntity implements ITickable{
                         if (player != null && this.isPlayerNearby(player, this.getPos()))
                             player.sendStatusMessage(new TextComponentString(new TextComponentTranslation("texts.pathblocked.part1").getUnformattedComponentText() + " [x:" + this.getPos().getX() + ",y:" + this.getPos().getY() + ",z:" + this.getPos().getZ() + "] " + new TextComponentTranslation("texts.pathblocked.part2").getUnformattedComponentText()), false);
                     }catch(NullPointerException e){
-
+                        e.printStackTrace();
                     }
                     for (int slot : slotsWithAnItem) {
                         ItemStack itemStack = trashInventory.getStackInSlot(slot);
@@ -156,6 +164,24 @@ public class TileEntityTrash extends TileEntity implements ITickable{
         this.markDirty();
     }
 
+    public boolean isbModuleAttached() {
+        return bModuleAttached;
+    }
+
+    public void setbModuleAttached(boolean bModuleAttached) {
+        this.bModuleAttached = bModuleAttached;
+        this.markDirty();
+    }
+
+    public boolean iswModuleAttached() {
+        return wModuleAttached;
+    }
+
+    public void setwModuleAttached(boolean bModuleAttached) {
+        this.wModuleAttached = bModuleAttached;
+        this.markDirty();
+    }
+
     @Override
     public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
         return oldState.getBlock() != newSate.getBlock();
@@ -172,5 +198,44 @@ public class TileEntityTrash extends TileEntity implements ITickable{
         return x1 <= playerPos.getX() && playerPos.getX() <= x2
                 && y1 <= playerPos.getY() && playerPos.getY() <= y2
                 && z1 <= playerPos.getZ() && playerPos.getZ() <= z2;
+    }
+
+    @Override
+    public boolean hasFastRenderer() {
+        return true;
+    }
+
+    @Override
+    public NBTTagCompound getUpdateTag() {
+        NBTTagCompound nbtTag = new NBTTagCompound();
+        nbtTag.setBoolean("nModuleAttached", nModuleAttached);
+        nbtTag.setBoolean("bModuleAttached", bModuleAttached);
+        nbtTag.setBoolean("wModuleAttached", wModuleAttached);
+        return nbtTag;
+    }
+
+    @Nullable
+    @Override
+    public SPacketUpdateTileEntity getUpdatePacket() {
+        NBTTagCompound nbtTag = new NBTTagCompound();
+        nbtTag.setBoolean("nModuleAttached", nModuleAttached);
+        nbtTag.setBoolean("bModuleAttached", bModuleAttached);
+        nbtTag.setBoolean("wModuleAttached", wModuleAttached);
+        return new SPacketUpdateTileEntity(getPos(), 1, nbtTag);
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+        NBTTagCompound compound = pkt.getNbtCompound();
+        nModuleAttached = compound.getBoolean("nModuleAttached");
+        bModuleAttached = compound.getBoolean("bModuleAttached");
+        wModuleAttached = compound.getBoolean("wModuleAttached");
+    }
+
+    @Override
+    public void handleUpdateTag(NBTTagCompound tag) {
+        nModuleAttached = tag.getBoolean("nModuleAttached");
+        bModuleAttached = tag.getBoolean("bModuleAttached");
+        wModuleAttached = tag.getBoolean("wModuleAttached");
     }
 }

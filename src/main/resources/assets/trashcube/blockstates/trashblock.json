@@ -1,17 +1,12 @@
 {
   "forge_marker": 1,
   "defaults": {
-		"model":"trashcube:trashblock",
-        "transform": "forge:default-block"
-    },
+    "model":"trashcube:trashblock",
+    "transform": "forge:default-block"
+  },
   "variants": {
-  "inventory":[{}],
-		"numberofslots": {
-			"0": {
-				"model": "trashcube:trashblock"
-			},
-			"1": {
-				"model": "trashcube:trashblock_hasnotification"
-            }
+    "inventory": [
+      {}
+    ],"normal": [{}]
+  }
 }
-}}
