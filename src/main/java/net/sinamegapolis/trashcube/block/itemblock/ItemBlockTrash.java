@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootEntryItem;
 import net.minecraftforge.fml.relauncher.Side;
@@ -22,8 +23,8 @@ public class ItemBlockTrash extends ItemBlock {
     @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-        tooltip.add("Converts your trash into Compressed Trash block every time its inventory gets full");
-        tooltip.add("Has 5 slots");
-        tooltip.add("Use a Hopper to insert items from top");
+        tooltip.add(new TextComponentTranslation("texts.tooltip.trashcube.line1").getUnformattedComponentText());
+        tooltip.add(new TextComponentTranslation("texts.tooltip.trashcube.line2").getUnformattedComponentText());
+        tooltip.add(new TextComponentTranslation("texts.tooltip.trashcube.line3").getUnformattedComponentText());
     }
 }

@@ -40,7 +40,7 @@ public class BlockCompressedTrash extends Block implements IHasModel {
 
     public BlockCompressedTrash(String name)
     {
-        super(Material.WOOD);
+        super(Material.ROCK);
         setCreativeTab(ModRegistry.TAB);
         setHardness(0.8f);
         setRegistryName(name);

@@ -88,14 +88,45 @@ public class BlockTrash extends Block implements IHasModel {
                 return true;
             }
             if(te.isnModuleAttached()){
-                te = (TileEntityTrash)worldIn.getTileEntity(pos);
                 if(!te.getModuleName().equals(new TextComponentTranslation("item.trashcube.nmodule.name").getUnformattedComponentText()))
                     playerIn.addItemStackToInventory(new ItemStack(ModRegistry.NotificationModule,1).setStackDisplayName(te.getModuleName()));
                 if(te.getModuleName().equals(new TextComponentTranslation("item.trashcube.nmodule.name").getUnformattedComponentText()))
                     playerIn.addItemStackToInventory(new ItemStack(ModRegistry.NotificationModule,1));
                 te.setnModuleAttached(false);
                 worldIn.notifyBlockUpdate(te.getPos(), state, state, 2);
-                return true;}}
+                return true;}
+                if(playerIn.getHeldItem(hand).getItem()==ModRegistry.BlacklistModule && !te.isbModuleAttached() && !te.iswModuleAttached()){
+            te.setbModuleAttached(true);
+            worldIn.notifyBlockUpdate(te.getPos(), state, state, 2);
+                    if(!playerIn.capabilities.isCreativeMode) {
+                        ItemStack stack = playerIn.getHeldItem(hand);
+                        stack.shrink(1);
+                        playerIn.setHeldItem(hand, stack);
+                    }
+                    return true;
+                }
+                if(te.isbModuleAttached()){
+                    playerIn.addItemStackToInventory(new ItemStack(ModRegistry.BlacklistModule,1));
+                    te.setbModuleAttached(false);
+                    worldIn.notifyBlockUpdate(te.getPos(), state, state, 2);
+                    return true;
+                }
+        if(playerIn.getHeldItem(hand).getItem()==ModRegistry.WhitelistModule && !te.iswModuleAttached() && !te.isbModuleAttached()){
+            te.setwModuleAttached(true);
+            worldIn.notifyBlockUpdate(te.getPos(), state, state, 2);
+            if(!playerIn.capabilities.isCreativeMode) {
+                ItemStack stack = playerIn.getHeldItem(hand);
+                stack.shrink(1);
+                playerIn.setHeldItem(hand, stack);
+            }
+            return true;
+        }
+        if(te.iswModuleAttached()){
+            playerIn.addItemStackToInventory(new ItemStack(ModRegistry.WhitelistModule,1));
+            te.setwModuleAttached(false);
+            worldIn.notifyBlockUpdate(te.getPos(), state, state, 2);
+            return true;
+        }}
                 return false;
     }
 
