@@ -1,0 +1,46 @@
+tile.trashcube.trashblock.name=Müllwürfel
+tile.trashcube.compressedtrash.0.name=Komprimierter Müllwürfel (Schwarz)
+tile.trashcube.compressedtrash.1.name=Komprimierter Müllwürfel (Rot)
+tile.trashcube.compressedtrash.2.name=Komprimierter Müllwürfel (Grün)
+tile.trashcube.compressedtrash.3.name=Komprimierter Müllwürfel (Braun)
+tile.trashcube.compressedtrash.4.name=Komprimierter Müllwürfel (Blau)
+tile.trashcube.compressedtrash.5.name=Komprimierter Müllwürfel (Violett)
+tile.trashcube.compressedtrash.6.name=Komprimierter Müllwürfel (Türkis)
+tile.trashcube.compressedtrash.7.name=Komprimierter Müllwürfel (Hellgrau)
+tile.trashcube.compressedtrash.8.name=Komprimierter Müllwürfel (Grau)
+tile.trashcube.compressedtrash.9.name=Komprimierter Müllwürfel (Rosa)
+tile.trashcube.compressedtrash.10.name=Komprimierter Müllwürfel (Hellgrün)
+tile.trashcube.compressedtrash.11.name=Komprimierter Müllwürfel (Gelb)
+tile.trashcube.compressedtrash.12.name=Komprimierter Müllwürfel (Hellblau)
+tile.trashcube.compressedtrash.13.name=Komprimierter Müllwürfel (Magenta)
+tile.trashcube.compressedtrash.14.name=Komprimierter Müllwürfel (Orange)
+tile.trashcube.compressedtrash.15.name=Komprimierter Müllwürfel (Weiß)
+
+item.trashcube.nmodule.name=Benachrichtigungs Upgrade
+item.trashcube.bmodule.name=Sperrlisten Upgrade
+item.trashcube.wmodule.name=Whitelist Upgrade
+
+texts.pathblocked.part1=Der Pfad der Struktur ist blockiert. Bitte Stelle sicher, dass
+texts.pathblocked.part2=der Müllwürfel in der Mitte des unteren Levels eines leere 5x5 Würfels ist und versuche es erneut.
+
+texts.structureComplete.line1=Die Struktur dieses
+texts.structureComplete.line2=Müllwürfels ist komplett. Er wird ab jetzt Müll löschen bis du ein paar Komprimierte Müllwürfel aufnimmst.
+
+texts.tooltip.nmodule.line1=Benachrichtigungs Upgrade!
+texts.tooltip.nmodule.line2=Nutze dies um einen nahen Spieler davon in Kenntnis zu setzen, wenn die Struktur des Müllwürfels komplett gebaut, oder der Pfad blockiert ist.
+texts.tooltip.nmodule.line3=Um den Spieler zu spezifizieren, benenne das Upgrade mit dem Namen des Spielers um.
+texts.tooltip.bmodule.line1=Sperrlisten Modul
+texts.tooltip.wmodule.line1=Whitelist Modul
+
+texts.tooltip.lazy.line1=Macht momentan nichts, weil Gründe
+texts.tooltip.lazy.line2=Warte auf das nächste Update ;|
+
+texts.tooltip.trashcube.line1=Wandelt deinen Müll in komprimierte Müllwürfel um, jedes Mal, wenn das Inventar voll ist.
+texts.tooltip.trashcube.line2=Hat 5 Slots
+texts.tooltip.trashcube.line3=Nutze einen Trichter um Items von oben hinzuzufügen
+
+texts.tooltip.compressedtrashblock.line1=Dies ist der Output des Müllwürfels!
+texts.tooltip.compressedtrashblock.line2=Du kannst ihn als dekorativen Block nutzenYou can use it as a decorative block
+texts.tooltip.compressedtrashblock.line3=oder sogar als Brennstoff im Ofen!
+
+itemGroup.trashcube=Müllwürfel
