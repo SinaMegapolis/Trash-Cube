@@ -30,13 +30,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemBlacklistModule extends Item implements IHasModel{
-    private ItemStackHandler blackList = new ItemStackHandler(27){
-        @Nonnull
-        @Override
-        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return super.insertItem(slot, stack, simulate);
-        }
-    };
 
 
     public ItemBlacklistModule(String name) {
@@ -57,13 +50,13 @@ public class ItemBlacklistModule extends Item implements IHasModel{
         tooltip.add(new TextComponentTranslation("texts.tooltip.bmodule.line1").getUnformattedComponentText());
         tooltip.add(new TextComponentTranslation("texts.tooltip.lazy.line1").getUnformattedComponentText());
         tooltip.add(new TextComponentTranslation("texts.tooltip.lazy.line2").getUnformattedComponentText());
-        tooltip.add(String.valueOf( blackList.getSlots()));
     }
 
     @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt) {
         return new ICapabilitySerializable<NBTTagCompound>() {
+            private ItemStackHandler blackList = new ItemStackHandler(27);
             @Override
             public NBTTagCompound serializeNBT() {
                 NBTTagCompound compound = new NBTTagCompound();
