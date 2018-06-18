@@ -24,23 +24,23 @@ texts.pathblocked.part1=The Structure Path is blocked. Please ensure that TrashC
 texts.pathblocked.part2=is in the center of the bottom layer of a 5x5 empty cube, then insert your trash again.
 
 texts.structureComplete.line1=This Trash Cube's
-texts.structureComplete.line2=Structure is Completed. Now it will only void the trash until you pickup some of the Compressed Trash Blocks.
+texts.structureComplete.line2=structure is completed. Now it will only void the trash until you pickup some of the Compressed Trash Blocks.
 
 texts.tooltip.nmodule.line1=Notification Upgrade!
-texts.tooltip.nmodule.line2=Use this to warn only one nearby player when Trash Cube's Structure is fully built or when it's path is blocked.
-texts.tooltip.nmodule.line3=To Specify the player Change it's name to The Player's username.
+texts.tooltip.nmodule.line2=Use this to warn only one nearby player when Trash Cube's Structure is fully built or when its path is blocked.
+texts.tooltip.nmodule.line3=To specify the player, change its name to the player's username.
 texts.tooltip.bmodule.line1=Blacklist Module
 texts.tooltip.wmodule.line1=Whitelist Module
 
 texts.tooltip.lazy.line1=Doesn't do anything right now because reasons
-texts.tooltip.lazy.line2=wait for next update ;|
+texts.tooltip.lazy.line2=Wait for next update ;|
 
-texts.tooltip.trashcube.line1=Converts your trash into Compressed Trash block every time its inventory gets full
+texts.tooltip.trashcube.line1=Converts your trash into a Compressed Trash Block every time its inventory gets full
 texts.tooltip.trashcube.line2=Has 5 slots
 texts.tooltip.trashcube.line3=Use a Hopper to insert items from top
 
 texts.tooltip.compressedtrashblock.line1=This is the output of TrashCube!
 texts.tooltip.compressedtrashblock.line2=You can use it as a decorative block
-texts.tooltip.compressedtrashblock.line3=or even a furnace fuel!
+texts.tooltip.compressedtrashblock.line3=or even as furnace fuel!
 
 itemGroup.trashcube=Trash Cube
