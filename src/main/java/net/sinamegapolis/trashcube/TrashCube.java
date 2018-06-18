@@ -8,7 +8,9 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.sinamegapolis.trashcube.proxy.CommonProxy;
+import net.sinamegapolis.trashcube.utill.GuiHandler;
 import org.apache.logging.log4j.Logger;
 
 @Mod(modid = TrashCube.MODID, name = TrashCube.NAME, version = TrashCube.VERSION)
@@ -23,10 +25,14 @@ public class TrashCube
     @SidedProxy(clientSide = "net.sinamegapolis.trashcube.proxy.ClientProxy", serverSide = "net.sinamegapolis.trashcube.proxy.CommonProxy")
     public static CommonProxy PROXY;
 
+    @Mod.Instance("trashcube")
+    public static TrashCube instance;
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent e){
         PROXY.preInit(e);
         PROXY.registerRenderers();
+        NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
     }
     @EventHandler
     public void init(FMLInitializationEvent e) {

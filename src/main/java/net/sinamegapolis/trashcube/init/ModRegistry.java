@@ -87,6 +87,7 @@ public class ModRegistry {
             LootPool lootpool = event.getTable().getPool("main");
             if(lootpool != null){
                 lootpool.addEntry(new LootEntryItemStack("trashcube:trashblock",new ItemStack(new ItemBlockTrash(TrashBlock), 2),15,3));
+                lootpool.addEntry(new LootEntryItemStack("trashcube:nmodule",new ItemStack(ModRegistry.NotificationModule),16,3));
             }
         }
     }
