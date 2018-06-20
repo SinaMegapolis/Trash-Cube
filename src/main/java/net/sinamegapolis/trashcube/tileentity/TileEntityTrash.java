@@ -56,7 +56,8 @@ public class TileEntityTrash extends TileEntity implements ITickable{
         compound.setBoolean("nModuleAttached", nModuleAttached);
         compound.setBoolean("bModuleAttached", bModuleAttached);
         compound.setBoolean("wModuleAttached", wModuleAttached);
-        compound.setTag("listUpgrade", listUpgrade.serializeNBT());
+        if(listUpgrade!=null)
+            compound.setTag("listUpgrade", listUpgrade.serializeNBT());
         return compound;
     }
 
@@ -96,7 +97,7 @@ public class TileEntityTrash extends TileEntity implements ITickable{
         //checks if any of slots is full
         for(int n = 0; n< TrashCubeConfig.slotAmount; n++){
             ItemStack stack = trashInventory.getStackInSlot(n);
-            if(listUpgrade!=null && !listUpgrade.isEmpty()) {
+            if(listUpgrade!=null && !listUpgrade.isEmpty() && !stack.isEmpty()) {
                 if (!checkItemStackForWhitelist(stack)&&listUpgrade.getItem()instanceof ItemWhitelistModule) {
                     dropItem(this.getWorld(), this.getPos().east(), stack);
                     trashInventory.setStackInSlot(n, ItemStack.EMPTY);
@@ -263,8 +264,7 @@ public class TileEntityTrash extends TileEntity implements ITickable{
             if (listUpgrade.getItem() instanceof ItemWhitelistModule) {
                 handler = (ItemStackHandler) listUpgrade.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
             }
-            //to prevent dropping ItemStack.EMPTY, it also checks if ItemStack.EMPTY is in whitelist (quality bugfix hahayes)
-            if (handler != null) {
+            if (handler != null && !stack.isEmpty()) {
                 for (int i = 0; i < handler.getSlots(); i++) {
                     if (handler.getStackInSlot(i).getItem() == stack.getItem())
                         return true;

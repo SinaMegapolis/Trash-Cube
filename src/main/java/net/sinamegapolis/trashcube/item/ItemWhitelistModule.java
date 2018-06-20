@@ -67,14 +67,13 @@ public class ItemWhitelistModule extends Item implements IHasModel {
             @Override
             public NBTTagCompound serializeNBT() {
                 NBTTagCompound compound = new NBTTagCompound();
-                compound.setTag("blacklist", whiteList.serializeNBT());
+                compound.setTag("whitelist", whiteList.serializeNBT());
                 return compound;
             }
 
             @Override
             public void deserializeNBT(NBTTagCompound nbt) {
-                nbt.removeTag("Size");
-                whiteList.deserializeNBT(nbt.getCompoundTag("blacklist"));
+                whiteList.deserializeNBT(nbt.getCompoundTag("whitelist"));
             }
 
             @Override
@@ -93,6 +92,6 @@ public class ItemWhitelistModule extends Item implements IHasModel {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         playerIn.openGui(TrashCube.instance, GuiHandler.LIST, worldIn, playerIn.getPosition().getX(), playerIn.getPosition().getY(), playerIn.getPosition().getZ());
-        return ActionResult.newResult(EnumActionResult.SUCCESS,new ItemStack(this,1));
+        return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
     }
 }
