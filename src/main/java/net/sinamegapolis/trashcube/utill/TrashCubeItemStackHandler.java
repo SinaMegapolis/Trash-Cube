@@ -1,4 +1,4 @@
-package net.sinamegapolis.trashcube.othersutill;
+package net.sinamegapolis.trashcube.utill;
 
 import net.minecraftforge.items.ItemStackHandler;
 import net.sinamegapolis.trashcube.config.TrashCubeConfig;

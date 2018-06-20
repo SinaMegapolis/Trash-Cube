@@ -23,8 +23,10 @@ import net.sinamegapolis.trashcube.block.BlockTrash;
 import net.sinamegapolis.trashcube.config.TrashCubeConfig;
 import net.sinamegapolis.trashcube.config.TrashCubeConfig;
 import net.sinamegapolis.trashcube.init.ModRegistry;
-import net.sinamegapolis.trashcube.othersutill.TrashCubeItemStackHandler;
+import net.sinamegapolis.trashcube.item.ItemBlacklistModule;
+import net.sinamegapolis.trashcube.item.ItemWhitelistModule;
 import net.sinamegapolis.trashcube.structure.StructureList;
+import net.sinamegapolis.trashcube.utill.TrashCubeItemStackHandler;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ public class TileEntityTrash extends TileEntity implements ITickable{
     private static ArrayList<BlockPos> cubeStructure;
     private boolean isStructureSet = false;
     private boolean saidTheStructureCompletedMessage=false;
+    private ItemStack listUpgrade;
     private String moduleName;
     private boolean nModuleAttached;
     private boolean bModuleAttached;
@@ -53,6 +56,7 @@ public class TileEntityTrash extends TileEntity implements ITickable{
         compound.setBoolean("nModuleAttached", nModuleAttached);
         compound.setBoolean("bModuleAttached", bModuleAttached);
         compound.setBoolean("wModuleAttached", wModuleAttached);
+        compound.setTag("listUpgrade", listUpgrade.serializeNBT());
         return compound;
     }
 
@@ -67,6 +71,7 @@ public class TileEntityTrash extends TileEntity implements ITickable{
         nModuleAttached = compound.getBoolean("nModuleAttached");
         bModuleAttached = compound.getBoolean("bModuleAttached");
         wModuleAttached = compound.getBoolean("wModuleAttached");
+        listUpgrade.deserializeNBT(compound.getCompoundTag("listUpgrade"));
     }
 
     @SuppressWarnings("unchecked")
@@ -88,8 +93,21 @@ public class TileEntityTrash extends TileEntity implements ITickable{
         int fullSlots = 0;
         ArrayList<Integer> slotsWithAnItem = new ArrayList<>();
         boolean isPathBlocked = false;
+        //checks if any of slots is full
         for(int n = 0; n< TrashCubeConfig.slotAmount; n++){
             ItemStack stack = trashInventory.getStackInSlot(n);
+            if(listUpgrade!=null && !listUpgrade.isEmpty()) {
+                if (!checkItemStackForWhitelist(stack)&&listUpgrade.getItem()instanceof ItemWhitelistModule) {
+                    dropItem(this.getWorld(), this.getPos().east(), stack);
+                    trashInventory.setStackInSlot(n, ItemStack.EMPTY);
+                }
+                if (checkItemStackForBlacklist(stack) && listUpgrade.getItem()instanceof ItemBlacklistModule) {
+                    dropItem(this.getWorld(), this.getPos().east(), stack);
+                    trashInventory.setStackInSlot(n, ItemStack.EMPTY);
+                }
+            }
+            //defined again to make sure nothing goes wrong
+            stack = trashInventory.getStackInSlot(n);
             if(stack != ItemStack.EMPTY) {
                 fullSlots = fullSlots + 1;
                 slotsWithAnItem.add(n);
@@ -105,6 +123,7 @@ public class TileEntityTrash extends TileEntity implements ITickable{
                 isStructureSet = true;
             }
             if(!cubeStructure.isEmpty()) {
+                //adds BlockPoses from the structure to the list and makes sure that the path isn't blocked
                 for (int i = 0; i < cubeStructure.size(); i++) {
                     IBlockState state = this.getWorld().getBlockState(cubeStructure.get(i));
                     if (state == Blocks.AIR.getDefaultState() || state.getBlock().isReplaceable(this.getWorld(), cubeStructure.get(i)))
@@ -130,18 +149,19 @@ public class TileEntityTrash extends TileEntity implements ITickable{
                         indexList.remove(0);
                     }
                 } else {
+                    //if the path is blocked it will inform the player who's name is given by Notification Upgrade then it will drop items from its inventory out
                     BlockPos pos = this.getPos().east();
                     try {
                         EntityPlayer player = this.getWorld().getPlayerEntityByName(moduleName);
                         if (player != null && this.isPlayerNearby(player, this.getPos()))
                             player.sendStatusMessage(new TextComponentString(new TextComponentTranslation("texts.pathblocked.part1").getUnformattedComponentText() + " [x:" + this.getPos().getX() + ",y:" + this.getPos().getY() + ",z:" + this.getPos().getZ() + "] " + new TextComponentTranslation("texts.pathblocked.part2").getUnformattedComponentText()), false);
                     }catch(NullPointerException e){
-                        e.printStackTrace();
+
                     }
                     for (int slot : slotsWithAnItem) {
                         ItemStack itemStack = trashInventory.getStackInSlot(slot);
                         if (itemStack != ItemStack.EMPTY)
-                            this.getWorld().spawnEntity(new EntityItem(this.getWorld(), pos.getX(), pos.getY(), pos.getZ(), itemStack));
+                            this.dropItem(this.getWorld(), pos, itemStack);
                     }
                 }
                 for (int slot : slotsWithAnItem) {
@@ -211,7 +231,7 @@ public class TileEntityTrash extends TileEntity implements ITickable{
 
     @Override
     public NBTTagCompound getUpdateTag() {
-        NBTTagCompound nbtTag = new NBTTagCompound();
+        NBTTagCompound nbtTag = super.getUpdateTag();
         nbtTag.setBoolean("nModuleAttached", nModuleAttached);
         nbtTag.setBoolean("bModuleAttached", bModuleAttached);
         nbtTag.setBoolean("wModuleAttached", wModuleAttached);
@@ -221,19 +241,12 @@ public class TileEntityTrash extends TileEntity implements ITickable{
     @Nullable
     @Override
     public SPacketUpdateTileEntity getUpdatePacket() {
-        NBTTagCompound nbtTag = new NBTTagCompound();
-        nbtTag.setBoolean("nModuleAttached", nModuleAttached);
-        nbtTag.setBoolean("bModuleAttached", bModuleAttached);
-        nbtTag.setBoolean("wModuleAttached", wModuleAttached);
-        return new SPacketUpdateTileEntity(getPos(), 1, nbtTag);
+        return new SPacketUpdateTileEntity(getPos(), 1, getUpdateTag());
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-        NBTTagCompound compound = pkt.getNbtCompound();
-        nModuleAttached = compound.getBoolean("nModuleAttached");
-        bModuleAttached = compound.getBoolean("bModuleAttached");
-        wModuleAttached = compound.getBoolean("wModuleAttached");
+        handleUpdateTag(pkt.getNbtCompound());
     }
 
     @Override
@@ -243,5 +256,50 @@ public class TileEntityTrash extends TileEntity implements ITickable{
         wModuleAttached = tag.getBoolean("wModuleAttached");
     }
 
+    public boolean checkItemStackForWhitelist(ItemStack stack){
+        try {
+            ItemStackHandler handler = null;
+            //double check
+            if (listUpgrade.getItem() instanceof ItemWhitelistModule) {
+                handler = (ItemStackHandler) listUpgrade.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+            }
+            //to prevent dropping ItemStack.EMPTY, it also checks if ItemStack.EMPTY is in whitelist (quality bugfix hahayes)
+            if (handler != null) {
+                for (int i = 0; i < handler.getSlots(); i++) {
+                    if (handler.getStackInSlot(i).getItem() == stack.getItem())
+                        return true;
+                }
+            }
+            return false;
+        }catch (NullPointerException e){
+            return false;
+        }
+    }
 
+    public boolean checkItemStackForBlacklist(ItemStack stack){
+        try {
+            ItemStackHandler handler = null;
+            //double check
+            if (listUpgrade.getItem() instanceof ItemBlacklistModule) {
+                handler = (ItemStackHandler) listUpgrade.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+            }
+            if (handler != null && !stack.isEmpty()) {
+                for (int i = 0; i < handler.getSlots(); i++) {
+                    if (handler.getStackInSlot(i).getItem() == stack.getItem())
+                        return true;
+                }
+            }
+            return false;
+        }catch (NullPointerException e){
+            return false;
+        }
+    }
+
+    public void setListUpgrade(ItemStack stack){
+        listUpgrade=stack;
+    }
+
+    public void dropItem(World worldIn, BlockPos pos, ItemStack stack){
+        worldIn.spawnEntity(new EntityItem(this.getWorld(), pos.getX(), pos.getY(), pos.getZ(), stack));
+    }
 }

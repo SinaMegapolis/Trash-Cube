@@ -88,16 +88,19 @@ public class BlockTrash extends Block implements IHasModel {
                 return true;
             }
             if(te.isnModuleAttached()){
-                if(!te.getModuleName().equals(new TextComponentTranslation("item.trashcube.nmodule.name").getUnformattedComponentText()))
-                    playerIn.addItemStackToInventory(new ItemStack(ModRegistry.NotificationModule,1).setStackDisplayName(te.getModuleName()));
-                if(te.getModuleName().equals(new TextComponentTranslation("item.trashcube.nmodule.name").getUnformattedComponentText()))
-                    playerIn.addItemStackToInventory(new ItemStack(ModRegistry.NotificationModule,1));
+                if(!playerIn.capabilities.isCreativeMode) {
+                    if (!te.getModuleName().equals(new TextComponentTranslation("item.trashcube.nmodule.name").getUnformattedComponentText()))
+                        playerIn.addItemStackToInventory(new ItemStack(ModRegistry.NotificationModule, 1).setStackDisplayName(te.getModuleName()));
+                    if (te.getModuleName().equals(new TextComponentTranslation("item.trashcube.nmodule.name").getUnformattedComponentText()))
+                        playerIn.addItemStackToInventory(new ItemStack(ModRegistry.NotificationModule, 1));
+                }
                 te.setnModuleAttached(false);
                 worldIn.notifyBlockUpdate(te.getPos(), state, state, 2);
                 return true;}
                 if(playerIn.getHeldItem(hand).getItem()==ModRegistry.BlacklistModule && !te.isbModuleAttached() && !te.iswModuleAttached()){
             te.setbModuleAttached(true);
             worldIn.notifyBlockUpdate(te.getPos(), state, state, 2);
+            te.setListUpgrade(playerIn.getHeldItem(hand));
                     if(!playerIn.capabilities.isCreativeMode) {
                         ItemStack stack = playerIn.getHeldItem(hand);
                         stack.shrink(1);
@@ -106,7 +109,8 @@ public class BlockTrash extends Block implements IHasModel {
                     return true;
                 }
                 if(te.isbModuleAttached()){
-                    playerIn.addItemStackToInventory(new ItemStack(ModRegistry.BlacklistModule,1));
+                    if(!playerIn.capabilities.isCreativeMode)
+                       playerIn.addItemStackToInventory(new ItemStack(ModRegistry.BlacklistModule,1));
                     te.setbModuleAttached(false);
                     worldIn.notifyBlockUpdate(te.getPos(), state, state, 2);
                     return true;
@@ -114,6 +118,7 @@ public class BlockTrash extends Block implements IHasModel {
         if(playerIn.getHeldItem(hand).getItem()==ModRegistry.WhitelistModule && !te.iswModuleAttached() && !te.isbModuleAttached()){
             te.setwModuleAttached(true);
             worldIn.notifyBlockUpdate(te.getPos(), state, state, 2);
+            te.setListUpgrade(playerIn.getHeldItem(hand));
             if(!playerIn.capabilities.isCreativeMode) {
                 ItemStack stack = playerIn.getHeldItem(hand);
                 stack.shrink(1);
@@ -122,11 +127,13 @@ public class BlockTrash extends Block implements IHasModel {
             return true;
         }
         if(te.iswModuleAttached()){
-            playerIn.addItemStackToInventory(new ItemStack(ModRegistry.WhitelistModule,1));
-            te.setwModuleAttached(false);
-            worldIn.notifyBlockUpdate(te.getPos(), state, state, 2);
-            return true;
-        }}
+                if(!playerIn.capabilities.isCreativeMode)
+                    playerIn.addItemStackToInventory(new ItemStack(ModRegistry.WhitelistModule,1));
+                te.setwModuleAttached(false);
+                worldIn.notifyBlockUpdate(te.getPos(), state, state, 2);
+                return true;
+            }
+        }
                 return false;
     }
 

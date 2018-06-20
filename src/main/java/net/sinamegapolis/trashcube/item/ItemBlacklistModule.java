@@ -1,6 +1,8 @@
 package net.sinamegapolis.trashcube.item;
 
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -23,7 +25,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.sinamegapolis.trashcube.TrashCube;
 import net.sinamegapolis.trashcube.init.IHasModel;
 import net.sinamegapolis.trashcube.init.ModRegistry;
-import net.sinamegapolis.trashcube.utill.ItemStackHandlerList;
+import net.sinamegapolis.trashcube.utill.GuiHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -47,9 +49,13 @@ public class ItemBlacklistModule extends Item implements IHasModel{
     @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-        tooltip.add(new TextComponentTranslation("texts.tooltip.bmodule.line1").getUnformattedComponentText());
-        tooltip.add(new TextComponentTranslation("texts.tooltip.lazy.line1").getUnformattedComponentText());
-        tooltip.add(new TextComponentTranslation("texts.tooltip.lazy.line2").getUnformattedComponentText());
+        if(GuiScreen.isShiftKeyDown()) {
+            tooltip.add(I18n.format("texts.tooltip.bmodule.line1"));
+            tooltip.add(I18n.format("texts.tooltip.bmodule.line2"));
+            tooltip.add(I18n.format("texts.tooltip.bmodule.line3"));
+        }else{
+            tooltip.add(I18n.format("texts.tooltip.moreinfo"));
+        }
     }
 
     @Nullable
@@ -85,7 +91,7 @@ public class ItemBlacklistModule extends Item implements IHasModel{
 
     @Override
     public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        player.openGui(TrashCube.instance, 0, worldIn, player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());
+        player.openGui(TrashCube.instance, GuiHandler.LIST, worldIn, player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());
         return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
     }
 }
