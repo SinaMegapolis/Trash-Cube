@@ -86,6 +86,8 @@ public class ModRegistry {
             if(lootpool != null){
                 lootpool.addEntry(new LootEntryItemStack("trashcube:trashblock",new ItemStack(new ItemBlockTrash(TrashBlock), 2),15,3));
                 lootpool.addEntry(new LootEntryItemStack("trashcube:nmodule",new ItemStack(ModRegistry.NotificationModule),16,3));
+                lootpool.addEntry(new LootEntryItemStack("trashcube:bmodule",new ItemStack(ModRegistry.WhitelistModule),16,3));
+                lootpool.addEntry(new LootEntryItemStack("trashcube:wmodule",new ItemStack(ModRegistry.BlacklistModule),16,3));
             }
         }
     }
