@@ -1,14 +1,18 @@
 package net.sinamegapolis.trashcube.tileentity;
 
+import net.minecraft.block.BlockChest;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
@@ -18,7 +22,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
+import net.sinamegapolis.trashcube.block.BlockCompressedTrash;
 import net.sinamegapolis.trashcube.block.BlockTrash;
 import net.sinamegapolis.trashcube.config.TrashCubeConfig;
 import net.sinamegapolis.trashcube.config.TrashCubeConfig;
@@ -43,6 +50,7 @@ public class TileEntityTrash extends TileEntity implements ITickable{
     private boolean nModuleAttached;
     private boolean bModuleAttached;
     private boolean wModuleAttached;
+    private int progressStep = 0;
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
@@ -56,6 +64,7 @@ public class TileEntityTrash extends TileEntity implements ITickable{
         compound.setBoolean("nModuleAttached", nModuleAttached);
         compound.setBoolean("bModuleAttached", bModuleAttached);
         compound.setBoolean("wModuleAttached", wModuleAttached);
+        compound.setInteger("progressStep", progressStep);
         if(listUpgrade!=null)
             compound.setTag("listUpgrade", listUpgrade.serializeNBT());
         return compound;
@@ -72,7 +81,9 @@ public class TileEntityTrash extends TileEntity implements ITickable{
         nModuleAttached = compound.getBoolean("nModuleAttached");
         bModuleAttached = compound.getBoolean("bModuleAttached");
         wModuleAttached = compound.getBoolean("wModuleAttached");
-        listUpgrade.deserializeNBT(compound.getCompoundTag("listUpgrade"));
+        progressStep = compound.getInteger("progressStep");
+        if(compound.getCompoundTag("listUpgrade")!=null)
+            listUpgrade.deserializeNBT(compound.getCompoundTag("listUpgrade"));
     }
 
     @SuppressWarnings("unchecked")
@@ -109,66 +120,74 @@ public class TileEntityTrash extends TileEntity implements ITickable{
             }
             //defined again to make sure nothing goes wrong
             stack = trashInventory.getStackInSlot(n);
-            if(stack != ItemStack.EMPTY) {
+            if(!stack.isEmpty()) {
                 fullSlots = fullSlots + 1;
                 slotsWithAnItem.add(n);
             }
         }
-        if(fullSlots==TrashCubeConfig.slotAmount){
-            ArrayList<Integer> indexList = new ArrayList<>();
-            //Chooses the structure this Trash Cube will Build
-            if(cubeStructure==null)
-                isStructureSet = false;
-            if(!isStructureSet){
-                cubeStructure = StructureList.getRandomCubeStructure(this.getPos());
-                isStructureSet = true;
-            }
-            if(!cubeStructure.isEmpty()) {
-                //adds BlockPoses from the structure to the list and makes sure that the path isn't blocked
-                for (int i = 0; i < cubeStructure.size(); i++) {
-                    IBlockState state = this.getWorld().getBlockState(cubeStructure.get(i));
-                    if (state == Blocks.AIR.getDefaultState() || state.getBlock().isReplaceable(this.getWorld(), cubeStructure.get(i)))
-                        indexList.add(i);
-                    if (state != Blocks.AIR.getDefaultState() && state != ModRegistry.CompressedTrashBlock.getDefaultState() && !state.getBlock().isReplaceable(this.getWorld(),cubeStructure.get(i) ))
-                        isPathBlocked = true;
+        if(fullSlots==TrashCubeConfig.slotAmount && checkIfShouldDump()){
+            //checks if there is a chest next to the TrashCube and if so, insert every ItemStack into the chest
+            if(this.getWorld().getTileEntity(this.getPos().west())!=null && this.getWorld().getTileEntity(this.getPos().west()).hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)){
+                TileEntity te = this.getWorld().getTileEntity(this.getPos().west());
+                IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+                ItemHandlerHelper.insertItem(handler, new ItemStack(BlockCompressedTrash.instanceItemBlockCompressedTrash,1,15), false);
+            }else {
+                ArrayList<Integer> indexList = new ArrayList<>();
+                //Chooses the structure this Trash Cube will Build
+                if (cubeStructure == null)
+                    isStructureSet = false;
+                if (!isStructureSet) {
+                    cubeStructure = StructureList.getRandomCubeStructure(this.getPos());
+                    isStructureSet = true;
                 }
-                if (!isPathBlocked) {
-                    if (indexList.isEmpty()) {
-                        if(!saidTheStructureCompletedMessage) {
-                            try {
-                                EntityPlayer player = this.getWorld().getPlayerEntityByName(moduleName);
-                                if (player != null && this.isPlayerNearby(player, this.getPos())) {
-                                    player.sendStatusMessage(new TextComponentString(new TextComponentTranslation("texts.structureComplete.line1").getUnformattedComponentText() + " [x:" + this.getPos().getX() + ",y:" + this.getPos().getY() + ",z:" + this.getPos().getZ() + "] " + new TextComponentTranslation("texts.structureComplete.line2").getUnformattedComponentText()), false);
-                                    saidTheStructureCompletedMessage = true;
+                if (!cubeStructure.isEmpty()) {
+                    //adds BlockPoses from the structure to the list and makes sure that the path isn't blocked
+                    for (int i = 0; i < cubeStructure.size(); i++) {
+                        IBlockState state = this.getWorld().getBlockState(cubeStructure.get(i));
+                        if (state == Blocks.AIR.getDefaultState() || state.getBlock().isReplaceable(this.getWorld(), cubeStructure.get(i)))
+                            indexList.add(i);
+                        if (state != Blocks.AIR.getDefaultState() && state != ModRegistry.CompressedTrashBlock.getDefaultState() && !state.getBlock().isReplaceable(this.getWorld(), cubeStructure.get(i)))
+                            isPathBlocked = true;
+                    }
+                    if (!isPathBlocked) {
+                        if (indexList.isEmpty()) {
+                            if (!saidTheStructureCompletedMessage) {
+                                try {
+                                    EntityPlayer player = this.getWorld().getPlayerEntityByName(moduleName);
+                                    if (player != null && this.isPlayerNearby(player, this.getPos())) {
+                                        player.sendStatusMessage(new TextComponentString(new TextComponentTranslation("texts.structureComplete.line1").getUnformattedComponentText() + " [x:" + this.getPos().getX() + ",y:" + this.getPos().getY() + ",z:" + this.getPos().getZ() + "] " + new TextComponentTranslation("texts.structureComplete.line2").getUnformattedComponentText()), false);
+                                        saidTheStructureCompletedMessage = true;
+                                    }
+                                } catch (NullPointerException e) {
+                                    saidTheStructureCompletedMessage = false;
                                 }
-                            } catch (NullPointerException e) {
-                                saidTheStructureCompletedMessage = false;
                             }
+                        } else {
+                            this.getWorld().setBlockState(cubeStructure.get(indexList.get(0)), ModRegistry.CompressedTrashBlock.getDefaultState());
+                            indexList.remove(0);
                         }
                     } else {
-                        this.getWorld().setBlockState(cubeStructure.get(indexList.get(0)), ModRegistry.CompressedTrashBlock.getDefaultState());
-                        indexList.remove(0);
-                    }
-                } else {
-                    //if the path is blocked it will inform the player who's name is given by Notification Upgrade then it will drop items from its inventory out
-                    BlockPos pos = this.getPos().east();
-                    try {
-                        EntityPlayer player = this.getWorld().getPlayerEntityByName(moduleName);
-                        if (player != null && this.isPlayerNearby(player, this.getPos()))
-                            player.sendStatusMessage(new TextComponentString(new TextComponentTranslation("texts.pathblocked.part1").getUnformattedComponentText() + " [x:" + this.getPos().getX() + ",y:" + this.getPos().getY() + ",z:" + this.getPos().getZ() + "] " + new TextComponentTranslation("texts.pathblocked.part2").getUnformattedComponentText()), false);
-                    }catch(NullPointerException e){
+                        //if the path is blocked it will inform the player who's name is given by Notification Upgrade then it will drop items from its inventory out
+                        BlockPos pos = this.getPos().east();
+                        try {
+                            EntityPlayer player = this.getWorld().getPlayerEntityByName(moduleName);
+                            if (player != null && this.isPlayerNearby(player, this.getPos()))
+                                player.sendStatusMessage(new TextComponentString(new TextComponentTranslation("texts.pathblocked.part1").getUnformattedComponentText() + " [x:" + this.getPos().getX() + ",y:" + this.getPos().getY() + ",z:" + this.getPos().getZ() + "] " + new TextComponentTranslation("texts.pathblocked.part2").getUnformattedComponentText()), false);
+                        } catch (NullPointerException e) {
 
-                    }
-                    for (int slot : slotsWithAnItem) {
-                        ItemStack itemStack = trashInventory.getStackInSlot(slot);
-                        if (itemStack != ItemStack.EMPTY)
-                            this.dropItem(this.getWorld(), pos, itemStack);
+                        }
+                        for (int slot : slotsWithAnItem) {
+                            ItemStack itemStack = trashInventory.getStackInSlot(slot);
+                            if (itemStack != ItemStack.EMPTY)
+                                this.dropItem(this.getWorld(), pos, itemStack);
+
+                        }
                     }
                 }
+            }
                 for (int slot : slotsWithAnItem) {
                     trashInventory.setStackInSlot(slot, ItemStack.EMPTY);
                 }
-            }
         }
     }
 
@@ -299,7 +318,20 @@ public class TileEntityTrash extends TileEntity implements ITickable{
         listUpgrade=stack;
     }
 
-    public void dropItem(World worldIn, BlockPos pos, ItemStack stack){
-        worldIn.spawnEntity(new EntityItem(this.getWorld(), pos.getX(), pos.getY(), pos.getZ(), stack));
+    private void dropItem(World worldIn, BlockPos pos, ItemStack stack){
+        InventoryHelper.spawnItemStack(worldIn, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), stack);
+    }
+
+    private boolean checkIfShouldDump(){
+        World world = this.getWorld();
+        if(progressStep!=12){
+            progressStep += 1;
+            world.setBlockState(this.getPos(), world.getBlockState(this.getPos()).cycleProperty(BlockTrash.PROGRESS_STEP));
+            return false;
+        }else{
+            progressStep = 0;
+            world.setBlockState(this.getPos(), this.getBlockType().getDefaultState());
+            return true;
+        }
     }
 }

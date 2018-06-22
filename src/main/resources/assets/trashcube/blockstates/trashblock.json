@@ -1,12 +1,94 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model":"trashcube:trashblock",
+    "model":"cube_all",
+    "textures": {
+      "south": "trashcube:blocks/trashblock_side_progress",
+      "north": "trashcube:blocks/trashblock_side_progress",
+      "up": "trashcube:blocks/trashblock_top",
+      "east": "trashcube:blocks/trashblock_side_slots",
+      "west": "trashcube:blocks/trashblock_side",
+      "down": "trashcube:blocks/trashblock_side",
+      "particle": "trashcube:blocks/trashblock_side"
+    },
     "transform": "forge:default-block"
   },
   "variants": {
     "inventory": [
       {}
-    ],"normal": [{}]
+    ],"normal": [{}],
+    "progress":{
+  "0":{},
+"1":{
+  "textures": {
+    "south": "trashcube:blocks/trashblock_side_progress_1",
+    "north": "trashcube:blocks/trashblock_side_progress_1"
+  }
+},
+      "2":{
+        "textures": {
+          "south": "trashcube:blocks/trashblock_side_progress_2",
+          "north": "trashcube:blocks/trashblock_side_progress_2"
+        }
+      },
+      "3":{
+        "textures": {
+          "south": "trashcube:blocks/trashblock_side_progress_3",
+          "north": "trashcube:blocks/trashblock_side_progress_3"
+        }
+      },
+      "4":{
+        "textures": {
+          "south": "trashcube:blocks/trashblock_side_progress_4",
+          "north": "trashcube:blocks/trashblock_side_progress_4"
+        }
+      },
+      "5":{
+        "textures": {
+          "south": "trashcube:blocks/trashblock_side_progress_5",
+          "north": "trashcube:blocks/trashblock_side_progress_5"
+        }
+      },
+      "6":{"textures": {
+        "south": "trashcube:blocks/trashblock_side_progress_6",
+        "north": "trashcube:blocks/trashblock_side_progress_6"
+      }},
+      "7":{
+        "textures": {
+          "south": "trashcube:blocks/trashblock_side_progress_7",
+          "north": "trashcube:blocks/trashblock_side_progress_7"
+        }
+      },
+      "8":{
+        "textures": {
+          "south": "trashcube:blocks/trashblock_side_progress_8",
+          "north": "trashcube:blocks/trashblock_side_progress_8"
+        }
+      },
+      "9":{
+        "textures": {
+          "south": "trashcube:blocks/trashblock_side_progress_9",
+          "north": "trashcube:blocks/trashblock_side_progress_9"
+        }
+      },
+      "10":{
+        "textures": {
+          "south": "trashcube:blocks/trashblock_side_progress_10",
+          "north": "trashcube:blocks/trashblock_side_progress_10"
+        }
+      },
+      "11":{
+        "textures": {
+          "south": "trashcube:blocks/trashblock_side_progress_11",
+          "north": "trashcube:blocks/trashblock_side_progress_11"
+        }
+      },
+      "12":{
+        "textures": {
+          "south": "trashcube:blocks/trashblock_side_progress_12",
+          "north": "trashcube:blocks/trashblock_side_progress_12"
+        }
+      }
+}
   }
 }

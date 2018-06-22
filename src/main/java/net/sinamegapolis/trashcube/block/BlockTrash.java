@@ -9,6 +9,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 public class BlockTrash extends Block implements IHasModel {
 
     private ItemBlockTrash instance;
+    public static final PropertyInteger PROGRESS_STEP = PropertyInteger.create("progress", 0, 12);
 
     public BlockTrash(String name)
     {
@@ -44,6 +46,7 @@ public class BlockTrash extends Block implements IHasModel {
         setHardness(0.8f);
         setRegistryName(name);
         setUnlocalizedName(TrashCube.MODID + "." + name);
+        setDefaultState(this.blockState.getBaseState().withProperty(PROGRESS_STEP, 0));
         ModRegistry.BLOCKS.add(this);
         instance = new ItemBlockTrash(this);
         ModRegistry.ITEMS.add(instance);
@@ -55,7 +58,8 @@ public class BlockTrash extends Block implements IHasModel {
 
     @Override
     public void registerModels() {
-            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
+        for (int i = 0; i < 13 ; i++)
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), i, new ModelResourceLocation(getRegistryName(), "progress="+i));
     }
 
     /**
@@ -166,5 +170,28 @@ public class BlockTrash extends Block implements IHasModel {
         super.breakBlock(worldIn, pos, state);
     }
 
+    @Override
+    public int getMetaFromState(IBlockState state) {
+        return state.getValue(PROGRESS_STEP);
+    }
 
+    @Override
+    public IBlockState getStateFromMeta(int meta) {
+        return this.getDefaultState().withProperty(PROGRESS_STEP, meta);
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, PROGRESS_STEP);
+    }
+
+    @Override
+    public int damageDropped(IBlockState state) {
+        return 0;
+    }
+
+    @Override
+    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
+        return getDefaultState().withProperty(PROGRESS_STEP, 0);
+    }
 }

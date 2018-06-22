@@ -1,7 +1,9 @@
 package net.sinamegapolis.trashcube.init;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.resources.SimpleReloadableResourceManager;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
