@@ -130,11 +130,13 @@ public class TileEntityTrash extends TileEntity implements ITickable{
             if(this.getWorld().getTileEntity(this.getPos().west())!=null && this.getWorld().getTileEntity(this.getPos().west()).hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)){
                 TileEntity te = this.getWorld().getTileEntity(this.getPos().west());
                 IItemHandler handler = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-                ItemHandlerHelper.insertItem(handler, new ItemStack(BlockCompressedTrash.instanceItemBlockCompressedTrash,1,15), false);
+                ItemStack stack = ItemHandlerHelper.insertItem(handler, new ItemStack(BlockCompressedTrash.instanceItemBlockCompressedTrash,1,15), false);
+                if(!stack.isEmpty())
+                    dropItem(world, this.getPos().east(), stack);
             }else {
                 ArrayList<Integer> indexList = new ArrayList<>();
                 //Chooses the structure this Trash Cube will Build
-                if (cubeStructure == null)
+                if (cubeStructure == null || cubeStructure.isEmpty())
                     isStructureSet = false;
                 if (!isStructureSet) {
                     cubeStructure = StructureList.getRandomCubeStructure(this.getPos());
@@ -276,7 +278,7 @@ public class TileEntityTrash extends TileEntity implements ITickable{
         wModuleAttached = tag.getBoolean("wModuleAttached");
     }
 
-    public boolean checkItemStackForWhitelist(ItemStack stack){
+    private boolean checkItemStackForWhitelist(ItemStack stack){
         try {
             ItemStackHandler handler = null;
             //double check
@@ -295,7 +297,7 @@ public class TileEntityTrash extends TileEntity implements ITickable{
         }
     }
 
-    public boolean checkItemStackForBlacklist(ItemStack stack){
+    private boolean checkItemStackForBlacklist(ItemStack stack){
         try {
             ItemStackHandler handler = null;
             //double check
