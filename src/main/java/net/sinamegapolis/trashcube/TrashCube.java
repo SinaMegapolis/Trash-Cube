@@ -13,7 +13,7 @@ import net.sinamegapolis.trashcube.proxy.CommonProxy;
 import net.sinamegapolis.trashcube.utill.GuiHandler;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = TrashCube.MODID, name = TrashCube.NAME, version = TrashCube.VERSION, updateJSON = "https://raw.githubusercontent.com/SinaMegapolis/Trash-Cube/master/updateCheckerFile.json")
+@Mod(modid = TrashCube.MODID, name = TrashCube.NAME, version = TrashCube.VERSION)
 public class TrashCube
 {
     public static final String MODID = "trashcube";
